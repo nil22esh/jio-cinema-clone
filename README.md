@@ -2,9 +2,9 @@
 
 A full-stack JioCinema clone built using the MERN stack (MongoDB, Express.js, React.js, Node.js). This project features user authentication, dynamic video streaming, and a responsive UI inspired by modern OTT platforms.
 
-# Backend Documentation for JioCinema Clone:
+# Backend Documentation for JioCinema Clone
 
-This document provides an overview of the backend architecture for the JioCinema clone project. It details routes, request bodies, responses, and descriptions for better understanding.
+This document provides detailed information on the backend implementation of the JioCinema clone project, including routes, request bodies, responses, and brief descriptions.
 
 ---
 
@@ -47,7 +47,7 @@ This document provides an overview of the backend architecture for the JioCinema
 }
 ```
 
-**Error (400):**:
+**Error (400):**
 
 ```json
 {
@@ -60,66 +60,194 @@ This document provides an overview of the backend architecture for the JioCinema
 
 #### Description:
 
-This route allows users to register by providing a username, email, and password. The input is validated using `express-validator`, and a JWT token is generated upon successful registration.
+This route registers a new user by validating the input fields using `express-validator`. Upon successful registration, it stores the user details in MongoDB and generates a JWT token for authentication.
 
 ---
 
-## Components
+### 2. **User Login (Sign-In)**
 
-### 1. **Controller: `user.controller.js`**
+- **Route:** `/api/v1/users/signin`
+- **Method:** POST
 
-#### Function: `signUp`
+#### Request Body:
 
-- **Purpose:** Handles the user registration logic, including validation and JWT token generation.
-- **Workflow:**
-  - Validates input fields using `express-validator`.
-  - Calls `createUser` from `user.repository.js` to store user details in the database.
-  - Generates a JWT token using `generateJwtToken`.
+```json
+{
+  "email": "string",
+  "password": "string"
+}
+```
 
-### 2. **Model: `user.model.js`**
+#### Response:
 
-#### User Schema
+**Success (200):**
 
-- **Fields:**
+```json
+{
+  "success": true,
+  "msg": "User Logged In Successfully!",
+  "user": {
+    "username": "string",
+    "email": "string",
+    "profilePicture": "string",
+    "role": "string",
+    "createdAt": "Date",
+    "_id": "string"
+  },
+  "JwtToken": "string"
+}
+```
 
-  - `username` (String, required, unique)
-  - `email` (String, required, unique)
-  - `password` (String, required, minLength: 6, hashed before saving)
-  - `profilePicture` (String, optional)
-  - `role` (Enum: ["user", "admin"], default: "user")
-  - `createdAt` (Date, default: now)
+**Error (401):**
 
-- **Methods:**
-  - `comparePassword(password)`: Compares input password with hashed password.
-  - `generateJwtToken()`: Generates a JWT token with user ID and expiration.
+```json
+{
+  "success": false,
+  "msg": "Invalid Email or Password!"
+}
+```
 
-### 3. **Routes: `user.routes.js`**
+#### Description:
 
-- **Route:** POST `/signup`
-- **Validation:**
+This route allows users to log in by verifying their email and password. It checks the credentials against the stored data in MongoDB, and upon success, generates a JWT token for session management.
 
-  - `username` must not be empty.
-  - `email` must be a valid email.
-  - `password` must be at least 6 characters long.
+---
 
-- **Controller:** `signUp`
+### 3. **User Logout (Sign-Out)**
 
-### 4. **Repository: `user.repository.js`**
+- **Route:** `/api/v1/users/signout`
+- **Method:** GET
 
-#### Function: `createUser`
+#### Response:
 
-- **Purpose:** Encapsulates the logic to create a new user in the database.
-- **Workflow:**
-  - Validates required fields (`username`, `email`, `password`).
-  - Creates and saves a new user document in MongoDB.
+**Success (200):**
 
-### 5. **App Configuration: `app.js`**
+```json
+{
+  "success": true,
+  "msg": "User Logged Out Successfully!"
+}
+```
 
-- Initializes the Express app and sets up environment variables using `dotenv`.
-- Configures middleware like `body-parser` for parsing request bodies.
-- Connects to MongoDB via `dbConnection`.
-- Sets up the `/api/v1/users` route for user-related endpoints.
-- Includes a health check route (`/`) to verify the application is running.
+#### Description:
+
+This route logs out the user by clearing the authentication token from the cookies and blacklisting the token to prevent reuse.
+
+---
+
+### 4. **Get User Profile**
+
+- **Route:** `/api/v1/users/profile`
+- **Method:** GET
+- **Authentication Required**
+
+#### Headers:
+
+```json
+{
+  "Authorization": "Bearer <jwtToken>"
+}
+```
+
+#### Response:
+
+**Success (200):**
+
+```json
+{
+  "success": true,
+  "user": {
+    "username": "string",
+    "email": "string",
+    "profilePicture": "string",
+    "role": "string",
+    "createdAt": "Date",
+    "_id": "string"
+  }
+}
+```
+
+#### Description:
+
+This route retrieves the details of the currently authenticated user by decoding the JWT token and fetching the user data from MongoDB.
+
+---
+
+## Example Walkthrough
+
+### Registering a New User
+
+**Request:**
+
+```bash
+POST /api/v1/users/signup
+Content-Type: application/json
+```
+
+**Body:**
+
+```json
+{
+  "username": "john_doe",
+  "email": "john@example.com",
+  "password": "securePassword",
+  "profilePicture": "https://example.com/profile.jpg"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "msg": "User Registration Successful!",
+  "user": {
+    "username": "john_doe",
+    "email": "john@example.com",
+    "profilePicture": "https://example.com/profile.jpg",
+    "role": "user",
+    "createdAt": "2024-12-21T10:30:00.000Z",
+    "_id": "64ef2a27bcf86cd799439012"
+  },
+  "JwtToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZWYyYTI3YmNmODZjZDc5OTQzOTAxMiIsImV4cCI6MTcwMjg2ODAwMH0.k9mQ0XOtF6GdBtW7xvWyISoz"
+}
+```
+
+### Logging In a User
+
+**Request:**
+
+```bash
+POST /api/v1/users/signin
+Content-Type: application/json
+```
+
+**Body:**
+
+```json
+{
+  "email": "john@example.com",
+  "password": "securePassword"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "msg": "User Logged In Successfully!",
+  "user": {
+    "username": "john_doe",
+    "email": "john@example.com",
+    "profilePicture": "https://example.com/profile.jpg",
+    "role": "user",
+    "createdAt": "2024-12-21T10:30:00.000Z",
+    "_id": "64ef2a27bcf86cd799439012"
+  },
+  "JwtToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZWYyYTI3YmNmODZjZDc5OTQzOTAxMiIsImV4cCI6MTcwMjg2ODAwMH0.k9mQ0XOtF6GdBtW7xvWyISoz"
+}
+```
 
 ---
 
@@ -127,7 +255,7 @@ This route allows users to register by providing a username, email, and password
 
 - **`PORT`**: Port for the server (default: 3000).
 - **`JWT_SECRET`**: Secret key for signing JWT tokens.
-- **MongoDB Connection URI**: For database connectivity.
+- **`MongoDB_URI`**: MongoDB connection string.
 
 ---
 
@@ -138,12 +266,10 @@ This route allows users to register by providing a username, email, and password
    ```bash
    npm install
    ```
-3. Set up `.env` file with required environment variables.
+3. Create a `.env` file and add the required environment variables.
 4. Run the application:
    ```bash
    npm start
    ```
 
 ---
-
-This backend serves as the foundation for user management in the JioCinema clone project, offering scalable and secure user authentication and registration.

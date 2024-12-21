@@ -44,8 +44,9 @@ userSchema.pre("save", async function (password, next) {
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-userSchema.methods.comparePassword = function (password) {
-  return bcrypt.compare(password, this.password);
+// Define the comparePassword method on the userSchema
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
 };
 
 userSchema.methods.generateJwtToken = function () {
