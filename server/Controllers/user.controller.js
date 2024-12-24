@@ -79,5 +79,3 @@ export const getUserProfile = async (req, res, next) => {
     user: user,
   });
 };
-
-export const updateUserProfile = async (req, res, next) => {};

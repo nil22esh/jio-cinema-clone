@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import dbConnection from "./db/db.js";
 import userRouter from "./Routes/user.routes.js";
+import videoRouter from "./Routes/video.routes.js";
 
 // configuing environment variables
 dotenv.config();
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 
 // creating routes
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/videos", videoRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}!`);

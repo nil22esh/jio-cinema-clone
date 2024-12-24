@@ -8,7 +8,7 @@ This document provides detailed information on the backend implementation of the
 
 ---
 
-## Routes
+## USER ROUTES:
 
 ### 1. **User Registration (Sign-Up)**
 
@@ -249,6 +249,287 @@ Content-Type: application/json
 }
 ```
 
+## VIDEO ROUTES:
+
+### 1. **Add a New Video**
+
+- **Route:** `/api/v1/videos/addVideo`
+- **Method:** POST
+- **Authentication:** Required (Admin Only)
+
+#### Request Body:
+
+```json
+{
+  "title": "string",
+  "description": "string",
+  "genre": ["string"],
+  "releaseDate": "ISO 8601 date string",
+  "duration": "integer",
+  "thumbnail": "string (URL)",
+  "videoUrl": "string (URL)",
+  "cast": ["string"],
+  "languages": "string",
+  "category": "string"
+}
+```
+
+#### Response:
+
+**Success (201):**
+
+```json
+{
+  "success": true,
+  "msg": "Video Created Successfully!",
+  "video": {
+    "title": "string",
+    "description": "string",
+    "genre": ["string"],
+    "releaseDate": "Date",
+    "duration": "integer",
+    "thumbnail": "string (URL)",
+    "videoUrl": "string (URL)",
+    "cast": ["string"],
+    "languages": "string",
+    "category": "string",
+    "createdBy": "string (user ID)",
+    "_id": "string"
+  }
+}
+```
+
+**Error (400):**
+
+```json
+{
+  "success": false,
+  "errors": [
+    { "msg": "Validation error message", "param": "field", "location": "body" }
+  ]
+}
+```
+
+#### Description:
+
+This route allows authenticated admin users to add a new video to the platform. The video details are validated using `express-validator` before being stored in the database.
+
+---
+
+### 2. **Get All Videos**
+
+- **Route:** `/api/v1/videos/allVideos`
+- **Method:** GET
+- **Authentication:** Required (Admin Only)
+
+#### Response:
+
+**Success (200):**
+
+```json
+{
+  "success": true,
+  "msg": "All Videos Fetched Successfully!",
+  "count": "number",
+  "videos": [
+    {
+      "title": "string",
+      "description": "string",
+      "genre": ["string"],
+      "releaseDate": "Date",
+      "duration": "integer",
+      "thumbnail": "string (URL)",
+      "videoUrl": "string (URL)",
+      "languages": "string",
+      "category": "string",
+      "createdBy": "string (user ID)",
+      "_id": "string"
+    }
+  ]
+}
+```
+
+#### Description:
+
+This route retrieves all videos stored in the database. It is accessible only by authenticated admin users and returns a list of all video records.
+
+---
+
+### 3. **Get Video by ID**
+
+- **Route:** `/api/v1/videos/video/:id`
+- **Method:** GET
+- **Authentication:** Required (Admin Only)
+
+#### Response:
+
+**Success (200):**
+
+```json
+{
+  "success": true,
+  "msg": "Video Fetched Successfully!",
+  "video": {
+    "title": "string",
+    "description": "string",
+    "genre": ["string"],
+    "releaseDate": "Date",
+    "duration": "integer",
+    "thumbnail": "string (URL)",
+    "videoUrl": "string (URL)",
+    "languages": "string",
+    "category": "string",
+    "createdBy": "string (user ID)",
+    "_id": "string"
+  }
+}
+```
+
+**Error (400):**
+
+```json
+{
+  "success": false,
+  "msg": "Video with this id not found!"
+}
+```
+
+#### Description:
+
+This route fetches a specific video by its unique ID. It is only accessible to authenticated admin users.
+
+---
+
+### 4. **Update Video**
+
+- **Route:** `/api/v1/videos/updateVideo/:id`
+- **Method:** PUT
+- **Authentication:** Required (Admin Only)
+
+#### Request Body:
+
+```json
+{
+  "title": "string (optional)",
+  "description": "string (optional)",
+  "genre": ["string"] (optional),
+  "releaseDate": "ISO 8601 date string (optional)",
+  "duration": "integer (optional)",
+  "thumbnail": "string (URL) (optional)",
+  "videoUrl": "string (URL) (optional)",
+  "cast": ["string"] (optional),
+  "languages": "string (optional)",
+  "category": "string (optional)"
+}
+```
+
+#### Response:
+
+**Success (200):**
+
+```json
+{
+  "success": true,
+  "msg": "Video Updated Successfully",
+  "video": {
+    "title": "string",
+    "description": "string",
+    "genre": ["string"],
+    "releaseDate": "Date",
+    "duration": "integer",
+    "thumbnail": "string (URL)",
+    "videoUrl": "string (URL)",
+    "languages": "string",
+    "category": "string",
+    "_id": "string"
+  }
+}
+```
+
+**Error (400):**
+
+```json
+{
+  "success": false,
+  "msg": "Video with this id not found!"
+}
+```
+
+#### Description:
+
+This route updates details of an existing video. Only the fields provided in the request body will be updated. It is accessible to authenticated admin users.
+
+---
+
+### 5. **Delete Video**
+
+- **Route:** `/api/v1/videos/video/:id`
+- **Method:** DELETE
+- **Authentication:** Required (Admin Only)
+
+#### Response:
+
+**Success (200):**
+
+```json
+{
+  "success": true,
+  "msg": "Video Deleted Successfully"
+}
+```
+
+**Error (400):**
+
+```json
+{
+  "success": false,
+  "msg": "Video with this id not found!"
+}
+```
+
+#### Description:
+
+This route deletes a specific video from the database. It is only accessible to authenticated admin users.
+
+---
+
+### 6. **Get Videos by User ID**
+
+- **Route:** `/api/v1/videos/myVideos`
+- **Method:** GET
+- **Authentication:** Required
+
+#### Response:
+
+**Success (200):**
+
+```json
+{
+  "success": true,
+  "msg": "Videos Fetched Successfully!",
+  "count": "number",
+  "videos": [
+    {
+      "title": "string",
+      "description": "string",
+      "genre": ["string"],
+      "releaseDate": "Date",
+      "duration": "integer",
+      "thumbnail": "string (URL)",
+      "videoUrl": "string (URL)",
+      "languages": "string",
+      "category": "string",
+      "createdBy": "string (user ID)",
+      "_id": "string"
+    }
+  ]
+}
+```
+
+#### Description:
+
+This route fetches all videos created by the currently authenticated user. It is accessible to all authenticated users.
+
 ---
 
 ## Environment Variables
@@ -267,7 +548,7 @@ Content-Type: application/json
    npm install
    ```
 3. Create a `.env` file and add the required environment variables.
-4. Run the application:
+4. Start the server:
    ```bash
    npm start
    ```
