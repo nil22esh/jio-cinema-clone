@@ -50,7 +50,7 @@ export const createVideo = async ({
 
 export const allVideos = async () => {
   try {
-    const allVideos = await VideoModel.find();
+    const allVideos = await VideoModel.find().select("-rating.users");
     return allVideos;
   } catch (error) {
     throw new Error(`GetAllVideos Error: ${error}`);

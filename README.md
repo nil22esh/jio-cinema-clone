@@ -532,6 +532,279 @@ This route fetches all videos created by the currently authenticated user. It is
 
 ---
 
+## RATING ROUTES:
+
+### 1. Add Rating to Video
+
+**URL:** `/rate/:videoId`
+
+**Method:** `POST`
+
+**Middleware:** `authUser`
+
+**Request Body:**
+
+```json
+{
+  "comment": "string",
+  "rating": "number (1-5)"
+}
+```
+
+**Response:**
+
+- **Success (200):**
+  ```json
+  {
+    "success": true,
+    "msg": "Rating added successfully",
+    "rating": {
+      "comment": "string",
+      "rating": "number",
+      "userId": "string",
+      "videoId": "string",
+      "createdAt": "date"
+    },
+    "video": {
+      "average": "number",
+      "totalRatings": "number",
+      "users": [
+        {
+          "userId": "string",
+          "rate": "number"
+        }
+      ]
+    }
+  }
+  ```
+- **Error (404):**
+  ```json
+  {
+    "success": false,
+    "msg": "Video not found"
+  }
+  ```
+- **Error (500):**
+  ```json
+  {
+    "success": false,
+    "msg": "Error rating: error_message"
+  }
+  ```
+
+**Example:**
+**Request:**
+
+```json
+POST /rate/12345
+{
+  "comment": "Great video!",
+  "rating": 5
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "msg": "Rating added successfully",
+  "rating": {
+    "comment": "Great video!",
+    "rating": 5,
+    "userId": "67890",
+    "videoId": "12345",
+    "createdAt": "2024-12-25T12:00:00Z"
+  },
+  "video": {
+    "average": 4.8,
+    "totalRatings": 10,
+    "users": [
+      {
+        "userId": "67890",
+        "rate": 5
+      }
+    ]
+  }
+}
+```
+
+**Description:**
+This route allows authenticated users to add a rating and comment to a video. The average rating and total ratings for the video are updated dynamically.
+
+---
+
+### 2. Get Video Ratings
+
+**URL:** `/video/:videoId`
+
+**Method:** `GET`
+
+**Middleware:** `authUser`
+
+**Response:**
+
+- **Success (200):**
+  ```json
+  {
+    "success": true,
+    "msg": "Ratings retrieved successfully!",
+    "count": "number of ratings",
+    "ratings": [
+      {
+        "comment": "string",
+        "rating": "number",
+        "userId": "string",
+        "videoId": "string",
+        "createdAt": "date"
+      }
+    ]
+  }
+  ```
+- **Error (404):**
+  ```json
+  {
+    "success": false,
+    "msg": "Video not found"
+  }
+  ```
+
+**Example:**
+**Request:**
+
+```json
+GET /video/12345
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "msg": "Ratings retrieved successfully!",
+  "count": "2 ratings",
+  "ratings": [
+    {
+      "comment": "Great video!",
+      "rating": 5,
+      "userId": "67890",
+      "videoId": "12345",
+      "createdAt": "2024-12-25T12:00:00Z"
+    },
+    {
+      "comment": "Good content.",
+      "rating": 4,
+      "userId": "54321",
+      "videoId": "12345",
+      "createdAt": "2024-12-24T11:00:00Z"
+    }
+  ]
+}
+```
+
+**Description:**
+This route retrieves all ratings for a specific video. It includes comments, ratings, and the user who provided the rating.
+
+---
+
+### 3. Get Average Rating
+
+**URL:** `/video/:videoId/averageRating`
+
+**Method:** `GET`
+
+**Middleware:** `authUser`
+
+**Response:**
+
+- **Success (200):**
+  ```json
+  {
+    "success": true,
+    "msg": "Average rating retrieved successfully!",
+    "averageRating": "number"
+  }
+  ```
+- **Error (404):**
+  ```json
+  {
+    "success": false,
+    "msg": "Video not found"
+  }
+  ```
+
+**Example:**
+**Request:**
+
+```json
+GET /video/12345/averageRating
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "msg": "Average rating retrieved successfully!",
+  "averageRating": 4.8
+}
+```
+
+**Description:**
+This route provides the average rating for a specific video. It calculates the average dynamically based on all user ratings.
+
+---
+
+### 4. Get All Comments by Video ID
+
+**URL:** `/video/:videoId/comments`
+
+**Method:** `GET`
+
+**Middleware:** `authUser`
+
+**Response:**
+
+- **Success (200):**
+  ```json
+  {
+    "success": true,
+    "msg": "Comments retrieved successfully!",
+    "count": "number of comments",
+    "comments": ["string"]
+  }
+  ```
+- **Error (404):**
+  ```json
+  {
+    "success": false,
+    "msg": "Video not found"
+  }
+  ```
+
+**Example:**
+**Request:**
+
+```json
+GET /video/12345/comments
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "msg": "Comments retrieved successfully!",
+  "count": "2 comments",
+  "comments": ["Great video!", "Good content."]
+}
+```
+
+**Description:**
+This route retrieves all comments associated with a specific video. Comments are collected from all user ratings and returned in a simple array format.
+
+---
+
 ## Environment Variables
 
 - **`PORT`**: Port for the server (default: 3000).

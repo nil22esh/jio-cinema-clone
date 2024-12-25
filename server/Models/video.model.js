@@ -42,10 +42,14 @@ const videoSchema = new mongoose.Schema(
       required: true,
     },
     rating: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 5,
+      average: { type: Number, default: 0 },
+      totalRatings: { type: Number, default: 0 },
+      users: [
+        {
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },
+          rate: { type: Number, min: 1, max: 5 },
+        },
+      ],
     },
     views: {
       type: Number,

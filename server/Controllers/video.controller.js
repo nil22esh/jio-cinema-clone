@@ -37,6 +37,7 @@ export const addNewVideo = async (req, res, next) => {
     languages,
     category,
     createdBy,
+    rating: { average: 0, totalRatings: 0, users: [] },
   });
   res.status(201).json({
     success: true,
